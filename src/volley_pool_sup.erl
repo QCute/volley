@@ -5,7 +5,7 @@
 %% supervisor callback
 -export([init/1, start_worker/3]).
 
--spec start_link(atom(), term()) -> {'ok', pid()} | 'ignore' | {'error', {'already_started', pid()} | term()}.
+-spec start_link(atom(), term()) -> {ok, pid()} | ignore | {error, {already_started, pid()} | term()}.
 start_link(PoolName, PoolArgs) ->
     supervisor:start_link({local, name(PoolName)}, ?MODULE, [PoolName, PoolArgs]).
 
@@ -26,7 +26,7 @@ init([PoolName, PoolArgs]) ->
     %% pool table
     PoolTable = ets:new(PoolName, [named_table, public, set, {write_concurrency, true}, {read_concurrency, true}]),
     true = ets:insert(PoolTable, [{seq, 0}, {size, PoolSize}]),
-    %% construct child
+    %% construct child 
     Child = lists:map(fun(Id) -> {Id, {?MODULE, start_worker, [Id, PoolTable, Worker]}, RestartStrategy, infinity, worker, [?MODULE]} end, lists:seq(1, PoolSize)),
     {ok, {{one_for_one, Intensity, RestartPeriod}, Child}}.
 
