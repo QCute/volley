@@ -144,7 +144,7 @@ stop(_State) ->
 %%% supervisor callback
 %%%==================================================================
 %% @doc volley and volley pool supervisor callback
--spec init(Args :: term()) -> {ok, term()}.
+-spec init(Args :: term()) -> {ok, {SupFlags :: supervisor:sup_flags(), [ChildSpec :: supervisor:child_spec()]}} | ignore.
 init([]) ->
     {ok, {{one_for_one, 1000, 1}, []}};
 init([PoolName, PoolArgs]) ->
