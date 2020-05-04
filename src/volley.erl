@@ -84,7 +84,7 @@ change_size(PoolName, NewSize) ->
                 %% increase pool size
                 {ok, ChildSpec} = supervisor:get_childspec(?MODULE, PoolName),
                 %% use tuple, r16 or early
-                %% {_, {_, _, [_,  PoolArgs]}, _, _, _, _} = ChildSpec
+                %% {_, {_, _, [_, PoolArgs]}, _, _, _, _} = ChildSpec
                 %% use maps, otp 17 or later
                 {_, _, [_, PoolArgs]} = erlang:map_get(start, ChildSpec),
                 lists:foreach(fun(Id) -> supervisor:start_child(SupervisorName, make_worker(Id, PoolName, PoolArgs)) end, lists:seq(Size + 1, NewSize)),
@@ -146,18 +146,18 @@ stop(_State) ->
 %% @doc volley and volley pool supervisor callback
 -spec init(Args :: term()) -> {ok, {SupFlags :: supervisor:sup_flags(), [ChildSpec :: supervisor:child_spec()]}} | ignore.
 init([]) ->
-    {ok, {{one_for_one, 1000, 1}, []}};
+    {ok, {{one_for_one, 3, 10}, []}};
 init([PoolName, PoolArgs]) ->
     %% pool
     PoolSize        = proplists:get_value(size, PoolArgs, 1),
     Worker          = proplists:get_value(worker, PoolArgs),
     %% supervisor
-    RestartPeriod   = proplists:get_value(period, PoolArgs, 1),
-    Intensity       = proplists:get_value(intensity, PoolArgs, 1000),
+    RestartPeriod   = proplists:get_value(period, PoolArgs, 3),
+    Intensity       = proplists:get_value(intensity, PoolArgs, 10),
     RestartStrategy = proplists:get_value(restart, PoolArgs, permanent),
     Shutdown        = proplists:get_value(shutdown, PoolArgs, infinity),
     %% pool table
-    PoolTable = ets:new(PoolName, [named_table, public, set, {write_concurrency, true}, {read_concurrency, true}]),
+    PoolTable = ets:new(PoolName, [named_table, public, set, {read_concurrency, true}, {write_concurrency, true}]),
     true = ets:insert(PoolTable, [{seq, 0}, {size, PoolSize}]),
     %% construct child
     Child = lists:map(fun(Id) -> make_worker(Id, PoolTable, Worker, RestartStrategy, Shutdown) end, lists:seq(1, PoolSize)),
