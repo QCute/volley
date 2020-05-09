@@ -1,9 +1,17 @@
-# volley 
-* a lightweight erlang process pool inspired from pool-boy, erl-pool, cue-sport, revolver  
+# volley
+* a lightweight erlang process pool inspired from pool-boy, erl-pool, cue-sport, revolver
 * simple and fast
 * easy to integrate in your project
 
 # quick start
+* Add to rebar.config
+```
+{deps, [
+  ...
+  {volley, {git, "https://github.com/QCute/volley.git", {branch, "master"}}}
+]}.
+```
+
 * start a pool  
 1. define a worker  
 
