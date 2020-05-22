@@ -23,7 +23,7 @@
 -export([init/1, start_worker/3]).
 %% export type
 -export_type([pool_option/0]).
--type pool_option() :: {worker, {Module :: module(), Function :: atom(), Args :: [term()]}} | {size, non_neg_integer()} | {period, non_neg_integer()} | {intensity, non_neg_integer()} | {shutdown, supervisor:shutdown()} | {restart, supervisor:restart()}.
+-type pool_option() :: {worker, {Module :: module(), Function :: atom(), Args :: [term()]}} | {size, non_neg_integer()} | {period, non_neg_integer()} | {intensity, non_neg_integer()} | {shutdown, brutal_kill | timeout()} | {restart, permanent | transient | temporary}.
 %%%===================================================================
 %%% API functions
 %%%===================================================================
